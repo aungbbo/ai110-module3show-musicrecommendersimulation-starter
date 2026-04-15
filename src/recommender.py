@@ -81,17 +81,18 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     target_energy = float(user_prefs.get("target_energy", user_prefs.get("energy", 0.5)))
     likes_acoustic = user_prefs.get("likes_acoustic")
 
+    # Experiment: halve genre importance (2.0 -> 1.0).
     if favorite_genre and song["genre"].lower() == str(favorite_genre).lower():
-        score += 2.0
-        reasons.append("genre match (+2.0)")
+        score += 1.0
+        reasons.append("genre match (+1.0)")
 
     if favorite_mood and song["mood"].lower() == str(favorite_mood).lower():
         score += 1.0
         reasons.append("mood match (+1.0)")
 
-    # Reward closeness to target energy (max 1.0 points).
+    # Experiment: double energy importance (1.0x -> 2.0x).
     energy_similarity = max(0.0, 1.0 - abs(float(song["energy"]) - target_energy))
-    energy_points = energy_similarity
+    energy_points = 2.0 * energy_similarity
     score += energy_points
     reasons.append(f"energy closeness (+{energy_points:.2f})")
 
